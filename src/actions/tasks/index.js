@@ -30,7 +30,7 @@ export const fetchTodos = (params = {}) => async (dispatch) => {
 
     } catch (error) {
         dispatch({
-            tepe:    constants.FETCH_POSTS_FAIL,
+            type:    constants.FETCH_POSTS_FAIL,
             payload: error.message,
         });
     }
@@ -47,7 +47,7 @@ export const createTask = (data) => async (dispatch) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                data,
+                message: data,
             }),
         });
 
@@ -64,7 +64,7 @@ export const createTask = (data) => async (dispatch) => {
 
     } catch (error) {
         dispatch({
-            tepe:    constants.CREATE_TASK_FAIL,
+            type:    constants.CREATE_TASK_FAIL,
             payload: error.message,
         });
     }
@@ -94,7 +94,7 @@ export const deleteTask = (id) => async (dispatch) => {
 
     } catch (error) {
         dispatch({
-            tepe:    constants.DELETE_TASK_FAIL,
+            type:    constants.DELETE_TASK_FAIL,
             payload: error.message,
         });
     }
@@ -132,7 +132,7 @@ export const updateTasks = (data) => async (dispatch) => {
 
     } catch (error) {
         dispatch({
-            tepe:    constants.UPDATE_TASKS_FAIL,
+            type:    constants.UPDATE_TASKS_FAIL,
             payload: error.message,
         });
     }
