@@ -13,6 +13,10 @@ export default class Scheduler extends Component {
         newTask: '',
     };
 
+    componentDidMount () {
+        this.props.actions.fetchTodos();
+    }
+
     handleChangeInput = (value, event) => {
         this.setState({
             [value]: event.target.value,
@@ -25,7 +29,7 @@ export default class Scheduler extends Component {
         const { newTask: task } = this.state;
 
         if (task !== '' && task.length < 47) {
-            this.props.createTask(task);
+            this.props.actions.createTask(task);
             this.setState({
                 newTask: '',
             });

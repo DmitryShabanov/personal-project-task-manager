@@ -1,31 +1,36 @@
 // Core
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { createTask } from '../../actions/tasks';
+import * as tasksActions from '../../actions/tasks';
 
 // Components
 import Scheduler from 'components/Scheduler';
 
 class App extends Component {
     render () {
-        const { createTask: create, tasks } = this.props;
+        const { actions, todos } = this.props;
 
         return (
             <Scheduler
-                createTask = { create }
-                todos = { tasks }
+                actions = { actions }
+                todos = { todos }
             />
         );
     }
 }
 
-const mapStateToProps = (state) => ({
-    tasks: state.tasks.toJS(),
-});
+const mapStateToProps = (state) => {
+    const tasks = state.tasks.toJS();
+
+    return {
+        todos: tasks.todos,
+    };
+};
 
 const mapDispatchToProps = (dispatch) => ({
-    createTask: (item) => dispatch(createTask(item)),
+    actions: bindActionCreators(tasksActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
