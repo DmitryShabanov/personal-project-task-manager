@@ -23,7 +23,7 @@ export default class Task extends Component {
     };
 
     render () {
-        const { completed, important, message } = this.props;
+        const { completed, important, message, remove } = this.props;
 
         const styles = cx(Styles.task, {
             [Styles.completed]: completed,
@@ -48,7 +48,7 @@ export default class Task extends Component {
                         onClick = { this.changePriority }
                     />
                     <Edit color1 = '#3B8EF3' color2 = '#000' />
-                    <Delete color1 = '#3B8EF3' color2 = '#000' />
+                    <Delete color1 = '#3B8EF3' color2 = '#000' onClick = { remove } />
                 </div>
             </li>
         );

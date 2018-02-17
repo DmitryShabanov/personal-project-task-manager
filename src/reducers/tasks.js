@@ -5,9 +5,13 @@ import constants from '../actions/tasks/constants';
 const initialState = fromJS({
     isPostsFetching: false,
     isTaskCreating:  false,
+    isTaskDeleting:  false,
+    isTasksUpdating: false,
 
-    fetchPostsError: undefined,
-    createTaskError: undefined,
+    fetchPostsError:  undefined,
+    createTaskError:  undefined,
+    deleteTaskError:  undefined,
+    updateTasksError: undefined,
 
     todos: [],
     meta:  {},
@@ -42,6 +46,34 @@ export default (state = initialState, action) => {
             return state.merge(fromJS({
                 isTaskCreating: false,
                 todos:          state.get('todos').unshift(fromJS(action.payload)),
+            }));
+
+        // DELETE_TASK
+        case constants.DELETE_TASK_REQUEST:
+            return state.set('isTaskDeleting', true);
+        case constants.DELETE_TASK_FAIL:
+            return state.merge(fromJS({
+                isTaskDeleting:  false,
+                deleteTaskError: action.payload,
+            }));
+        case constants.DELETE_TASK_SUCCESS:
+            return state.merge(fromJS({
+                isTaskDeleting: false,
+                todos:          state.get('todos').filter((todo) => todo.get('id') !== action.payload),
+            }));
+
+        // UPDATE_TASK
+        case constants.UPDATE_TASKS_REQUEST:
+            return state.set('isTasksUpdating', true);
+        case constants.UPDATE_TASKS_FAIL:
+            return state.merge(fromJS({
+                isTasksUpdating:  false,
+                updateTasksError: action.payload,
+            }));
+        case constants.UPDATE_TASKS_SUCCESS:
+            return state.merge(fromJS({
+                isTasksUpdating: false,
+                todos:           state.get('todos').merge(fromJS(action.payload)),
             }));
 
         default:

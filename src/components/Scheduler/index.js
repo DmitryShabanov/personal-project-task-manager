@@ -28,12 +28,15 @@ export default class Scheduler extends Component {
 
         const { newTask: task } = this.state;
 
-        if (task !== '' && task.length < 47) {
+        const whiteSpace = task.search(/\S/);
+
+        if (task !== '' && task.length < 47 && whiteSpace >= 0) {
             this.props.actions.createTask(task);
-            this.setState({
-                newTask: '',
-            });
         }
+
+        this.setState({
+            newTask: '',
+        });
     }
 
     complete = (id) => {}
@@ -86,6 +89,8 @@ export default class Scheduler extends Component {
                 important = { important }
                 key = { id }
                 message = { message }
+                remove = { () => this.props.actions.deleteTask(id) }
+                // update = { }
             />
         ));
 

@@ -26,6 +26,7 @@ const mapStateToProps = (state) => {
 
     return {
         todos: tasks.todos,
+        meta:  tasks.meta,
     };
 };
 

@@ -36,7 +36,7 @@ export const fetchTodos = (params = {}) => async (dispatch) => {
     }
 };
 
-export const createTask = (message) => async (dispatch) => {
+export const createTask = (data) => async (dispatch) => {
     dispatch({ type: constants.CREATE_TASK_REQUEST });
 
     try {
@@ -47,13 +47,11 @@ export const createTask = (message) => async (dispatch) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                message,
+                data,
             }),
         });
 
         const responseParsed = await response.json();
-
-        console.log('createTask', responseParsed);
 
         if (response.status !== 200) {
             throw new Error(responseParsed.message);
@@ -67,6 +65,74 @@ export const createTask = (message) => async (dispatch) => {
     } catch (error) {
         dispatch({
             tepe:    constants.CREATE_TASK_FAIL,
+            payload: error.message,
+        });
+    }
+};
+
+export const deleteTask = (id) => async (dispatch) => {
+    dispatch({ type: constants.DELETE_TASK_REQUEST });
+
+    try {
+        const response = await fetch(`${api}/${id}`, {
+            method:  'DELETE',
+            headers: {
+                Authorization: token,
+            },
+        });
+
+        if (response.status !== 204) {
+            const responseParsed = await response.json();
+
+            throw new Error(responseParsed.message);
+        }
+
+        dispatch({
+            type:    constants.DELETE_TASK_SUCCESS,
+            payload: id,
+        });
+
+    } catch (error) {
+        dispatch({
+            tepe:    constants.DELETE_TASK_FAIL,
+            payload: error.message,
+        });
+    }
+};
+
+export const updateTasks = (data) => async (dispatch) => {
+    dispatch({ type: constants.UPDATE_TASKS_REQUEST });
+
+    console.log('updateTask params', data);
+
+    try {
+        const response = await fetch(api, {
+            method:  'PUT',
+            headers: {
+                Authorization:  token,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                data,
+            }),
+        });
+
+        const responseParsed = await response.json();
+
+        console.log('updateTask response', responseParsed);
+
+        if (response.status !== 200) {
+            throw new Error(responseParsed.message);
+        }
+
+        dispatch({
+            type:    constants.UPDATE_TASKS_SUCCESS,
+            payload: responseParsed.data,
+        });
+
+    } catch (error) {
+        dispatch({
+            tepe:    constants.UPDATE_TASKS_FAIL,
             payload: error.message,
         });
     }
