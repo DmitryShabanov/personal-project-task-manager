@@ -1,11 +1,31 @@
 // Core
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { createTask } from '../../actions/tasks';
 
 // Components
 import Scheduler from 'components/Scheduler';
 
-export default class App extends Component {
+class App extends Component {
     render () {
-        return <Scheduler />;
+        const { createTask: create, tasks } = this.props;
+
+        return (
+            <Scheduler
+                createTask = { create }
+                todos = { tasks }
+            />
+        );
     }
 }
+
+const mapStateToProps = (state) => ({
+    tasks: state.tasks.toJS(),
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    createTask: (item) => dispatch(createTask(item)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
