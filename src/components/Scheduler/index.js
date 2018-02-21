@@ -28,9 +28,7 @@ export default class Scheduler extends Component {
 
         const { newTask: task } = this.state;
 
-        const whiteSpace = task.search(/\S/);
-
-        if (task !== '' && task.length < 47 && whiteSpace >= 0) {
+        if (task !== '' && task.length < 47 && task.trim() !== '') {
             this.props.actions.createTask(task);
         }
 
@@ -39,58 +37,55 @@ export default class Scheduler extends Component {
         });
     }
 
-    complete = (id) => {}
-        // this.setState(({ todos }) => ({
-        //     todos: todos.map((todo) => {
-        //         if (todo.id === id) {
-        //             todo.completed = !todo.completed;
-        //         }
-        //
-        //         return todo;
-        //     }),
-        // }));
+    completeAll = () => {
+        const { todos } = this.props;
+        const { updateTasks } = this.props.actions;
+        let isCompleted = true;
+        let completedTodos = null;
 
-    changePriority = (id) => {}
-        // this.setState(({ todos }) => ({
-        //     todos: todos.map((todo) => {
-        //         if (todo.id === id) {
-        //             todo.important = !todo.important;
-        //         }
-        //
-        //         return todo;
-        //     }),
-        // }));
+        todos.forEach((item) => {
+            if (item.completed === false) {
+                isCompleted = false;
+            }
+        });
 
-    completeAll = () => {}
-        // this.setState(({ todos }) => ({
-        //     todso: todos.map((todo) => {
-        //         todo.completed = true;
-        //
-        //         return todo;
-        //     }),
-        // }));
+        if (isCompleted) {
+            completedTodos = todos.map((item) => ({
+                ...item,
+                completed: false,
+            }));
 
-        // create({
-        //     id:        'fdhgfjgkhghfjgkh',
-        //     message:   'fdhgfjgkhghfjgkh',
-        //     completed: false,
-        //     important: false,
-        // });
+            updateTasks(completedTodos);
+
+            return;
+        }
+
+        completedTodos = todos.map((item) => {
+            if (!item.completed) {
+                return {
+                    ...item,
+                    completed: true,
+                };
+            }
+
+            return item;
+        });
+
+        updateTasks(completedTodos);
+    }
 
     render () {
-        const { todos } = this.props;
+        const { todos, actions } = this.props;
         const allCompleted = todos.every((todo) => todo.completed);
-        const todoList = todos.map(({ id, message, completed, important }) => (
+        const todoList = todos.map(({ id, message, completed, favorite }) => (
             <Task
-                changePriority = { this.changePriority }
-                complete = { this.complete }
                 completed = { completed }
+                favorite = { favorite }
                 id = { id }
-                important = { important }
                 key = { id }
                 message = { message }
-                remove = { () => this.props.actions.deleteTask(id) }
-                // update = { }
+                remove = { () => actions.deleteTask(id) }
+                update = { actions.updateTasks }
             />
         ));
 

@@ -70,11 +70,25 @@ export default (state = initialState, action) => {
                 isTasksUpdating:  false,
                 updateTasksError: action.payload,
             }));
-        case constants.UPDATE_TASKS_SUCCESS:
+        case constants.UPDATE_TASKS_SUCCESS: {
+            const updateValues = fromJS(action.payload);
+            const merged = state.get('todos').map((item) => {
+                let result = item;
+
+                updateValues.forEach((update) => {
+                    if (update.get('id') === item.get('id')) {
+                        result = item.merge(update);
+                    }
+                });
+
+                return result;
+            });
+
             return state.merge(fromJS({
                 isTasksUpdating: false,
-                todos:           state.get('todos').merge(fromJS(action.payload)),
+                todos:           merged,
             }));
+        }
 
         default:
             return state;

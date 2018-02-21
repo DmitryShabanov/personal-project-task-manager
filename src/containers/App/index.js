@@ -27,6 +27,16 @@ const mapStateToProps = (state) => {
     return {
         todos: tasks.todos,
         meta:  tasks.meta,
+
+        isPostsFetching: tasks.isPostsFetching,
+        isTaskCreating:  tasks.isTaskCreating,
+        isTaskDeleting:  tasks.isTaskDeleting,
+        isTasksUpdating: tasks.isTasksUpdating,
+
+        fetchPostsError:  tasks.fetchPostsError,
+        createTaskError:  tasks.createTaskError,
+        deleteTaskError:  tasks.deleteTaskError,
+        updateTasksError: tasks.updateTasksError,
     };
 };
 
