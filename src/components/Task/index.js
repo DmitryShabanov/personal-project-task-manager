@@ -25,8 +25,8 @@ export default class Task extends Component {
         const { update, id, completed, favorite, message: prevMessage } = this.props;
         const { message, isEditing } = this.state;
 
-        if (isEditing && message !== prevMessage) {
-            if (message === '' || message.length > 47 || message.trim() === '') {
+        if (isEditing) {
+            if (message === '' || message.length > 47 || message.trim() === '' || message.trim() === prevMessage) {
                 this.setState({
                     isEditing: !this.state.isEditing,
                     message:   prevMessage,
@@ -38,7 +38,7 @@ export default class Task extends Component {
             update([
                 {
                     id,
-                    message,
+                    message: message.trim(),
                     favorite,
                     completed,
                 }

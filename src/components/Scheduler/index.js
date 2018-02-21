@@ -11,6 +11,7 @@ import Task from 'components/Task';
 export default class Scheduler extends Component {
     state = {
         newTask: '',
+        search:  '',
     };
 
     componentDidMount () {
@@ -23,13 +24,21 @@ export default class Scheduler extends Component {
         });
     }
 
+    handleEnterKey = (event) => {
+        if (event.key === 'Enter') {
+            this.props.actions.fetchTodos({
+                search: this.state.search,
+            });
+        }
+    }
+
     handleSubmit = (event) => {
         event.preventDefault();
 
         const { newTask: task } = this.state;
 
         if (task !== '' && task.length < 47 && task.trim() !== '') {
-            this.props.actions.createTask(task);
+            this.props.actions.createTask(task.trim());
         }
 
         this.setState({
@@ -76,8 +85,20 @@ export default class Scheduler extends Component {
 
     render () {
         const { todos, actions } = this.props;
+        const search = this.state.search.trim();
+        const filtered = todos.filter((item) => {
+            if (search.length > 0) {
+                if (item.message.toLowerCase().indexOf(search.toLowerCase()) !== -1) {
+                    return item;
+                }
+
+                return null;
+            }
+
+            return item;
+        });
         const allCompleted = todos.every((todo) => todo.completed);
-        const todoList = todos.map(({ id, message, completed, favorite }) => (
+        const todoList = filtered.map(({ id, message, completed, favorite }) => (
             <Task
                 completed = { completed }
                 favorite = { favorite }
@@ -97,6 +118,9 @@ export default class Scheduler extends Component {
                         <input
                             placeholder = 'Поиск'
                             type = 'search'
+                            value = { this.state.search }
+                            onChange = { (e) => this.handleChangeInput('search', e) }
+                            onKeyPress = { this.handleEnterKey }
                         />
                     </header>
                     <section>
