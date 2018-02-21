@@ -103,8 +103,6 @@ export const deleteTask = (id) => async (dispatch) => {
 export const updateTasks = (data) => async (dispatch) => {
     dispatch({ type: constants.UPDATE_TASKS_REQUEST });
 
-    console.log('updateTask params', data);
-
     try {
         const response = await fetch(api, {
             method:  'PUT',
@@ -112,14 +110,10 @@ export const updateTasks = (data) => async (dispatch) => {
                 Authorization:  token,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                data,
-            }),
+            body: JSON.stringify(data),
         });
 
         const responseParsed = await response.json();
-
-        console.log('updateTask response', responseParsed);
 
         if (response.status !== 200) {
             throw new Error(responseParsed.message);

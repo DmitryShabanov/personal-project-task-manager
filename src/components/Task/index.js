@@ -10,20 +10,81 @@ import Edit from 'theme/assets/Edit';
 import Star from 'theme/assets/Star';
 
 export default class Task extends Component {
-    complete = () => {
-        const { id, complete } = this.props;
+    state = {
+        message:   this.props.message,
+        isEditing: false,
+    }
 
-        complete(id);
+    handleEnterKey = (event) => {
+        if (event.key === 'Enter') {
+            this.onClickEditButton();
+        }
+    }
+
+    onClickEditButton = () => {
+        const { update, id, completed, favorite, message: prevMessage } = this.props;
+        const { message, isEditing } = this.state;
+
+        if (isEditing) {
+            if (message === '' || message.length > 47 || message.trim() === '' || message.trim() === prevMessage) {
+                this.setState({
+                    isEditing: !this.state.isEditing,
+                    message:   prevMessage,
+                });
+
+                return;
+            }
+
+            update([
+                {
+                    id,
+                    message: message.trim(),
+                    favorite,
+                    completed,
+                }
+            ]);
+        }
+
+        this.setState({
+            isEditing: !this.state.isEditing,
+        });
+    }
+
+    changeMessage = (value) => {
+        this.setState({
+            message: value,
+        });
+    }
+
+    complete = () => {
+        const { id, message, favorite, completed, update } = this.props;
+
+        update([
+            {
+                id,
+                message,
+                completed: !completed,
+                favorite,
+            }
+        ]);
     };
 
     changePriority = () => {
-        const { id, changePriority } = this.props;
+        const { id, message, favorite, completed, update } = this.props;
 
-        changePriority(id);
+        update([
+            {
+                id,
+                message,
+                completed,
+                favorite: !favorite,
+            }
+        ]);
     };
 
     render () {
-        const { completed, important, message, remove } = this.props;
+        const { completed, favorite, remove } = this.props;
+        const { isEditing } = this.state;
 
         const styles = cx(Styles.task, {
             [Styles.completed]: completed,
@@ -38,16 +99,32 @@ export default class Task extends Component {
                         color2 = '#FFF'
                         onClick = { this.complete }
                     />
-                    <code>{message}</code>
+                    <input
+                        disabled = { !this.state.isEditing }
+                        type = 'text'
+                        value = { this.state.message }
+                        onChange = { (event) => this.changeMessage(event.target.value) }
+                        onKeyPress = { this.handleEnterKey }
+                    />
                 </div>
                 <div>
                     <Star
-                        checked = { important }
+                        checked = { favorite }
                         color1 = '#3B8EF3'
                         color2 = '#000'
                         onClick = { this.changePriority }
                     />
-                    <Edit color1 = '#3B8EF3' color2 = '#000' />
+                    {
+                        completed ?
+                            null
+                            : (
+                                <Edit
+                                    color1 = '#3B8EF3'
+                                    color2 = { isEditing ? '#3B8EF3' : '#000' }
+                                    onClick = { this.onClickEditButton }
+                                />
+                            )
+                    }
                     <Delete color1 = '#3B8EF3' color2 = '#000' onClick = { remove } />
                 </div>
             </li>

@@ -17,6 +17,27 @@ const initialState = fromJS({
     meta:  {},
 });
 
+const compareFavorite = (item1, item2) => {
+    if (!item1.get('favorite') && item2.get('favorite') || item1.get('favorite') && item2.get('favorite')) {
+        return 1;
+    }
+    if (item1.get('favorite') && !item2.get('favorite')) {
+        return -1;
+    }
+};
+
+const compareCompleted = (item1, item2) => {
+    if (item1.get('completed') && item2.get('completed')) {
+        return 0;
+    }
+    if (item1.get('completed') && !item2.get('completed')) {
+        return 1;
+    }
+    if (!item1.get('completed') && item2.get('completed')) {
+        return -1;
+    }
+};
+
 export default (state = initialState, action) => {
     switch (action.type) {
         // FETCH_POSTS
@@ -30,7 +51,7 @@ export default (state = initialState, action) => {
         case constants.FETCH_POSTS_SUCCESS:
             return state.merge(fromJS({
                 isPostsFetching: false,
-                todos:           action.payload.todos,
+                todos:           fromJS(action.payload.todos).sort(compareFavorite).sort(compareCompleted),
                 meta:            action.payload.meta,
             }));
 
@@ -45,7 +66,7 @@ export default (state = initialState, action) => {
         case constants.CREATE_TASK_SUCCESS:
             return state.merge(fromJS({
                 isTaskCreating: false,
-                todos:          state.get('todos').unshift(fromJS(action.payload)),
+                todos:          state.get('todos').unshift(fromJS(action.payload)).sort(compareFavorite).sort(compareCompleted),
             }));
 
         // DELETE_TASK
@@ -70,11 +91,25 @@ export default (state = initialState, action) => {
                 isTasksUpdating:  false,
                 updateTasksError: action.payload,
             }));
-        case constants.UPDATE_TASKS_SUCCESS:
+        case constants.UPDATE_TASKS_SUCCESS: {
+            const updateValues = fromJS(action.payload);
+            const merged = state.get('todos').map((item) => {
+                let result = item;
+
+                updateValues.forEach((update) => {
+                    if (update.get('id') === item.get('id')) {
+                        result = item.merge(update);
+                    }
+                });
+
+                return result;
+            });
+
             return state.merge(fromJS({
                 isTasksUpdating: false,
-                todos:           state.get('todos').merge(fromJS(action.payload)),
+                todos:           merged.sort(compareFavorite).sort(compareCompleted),
             }));
+        }
 
         default:
             return state;
